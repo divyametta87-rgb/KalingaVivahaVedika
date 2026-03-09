@@ -36,3 +36,11 @@ This roadmap defines the development plan for the **Kalinga Vivaha Vedika** plat
 * [ ] **Agent Task**: Conduct SEO optimization (React Helmet/Meta tags) and performance audits (Lighthouse).
 * [ ] **Agent Task**: Containerize the application (Docker) and provide orchestrations scripts (Docker Compose/Kubernetes).
 * [ ] Deploy to production infrastructure (AWS/GCP/Azure/Vercel).
+
+---
+
+## 🤖 Continuous Agent Handoffs & Milestones
+To maintain velocity without losing control, the project will observe these milestones:
+1. **MVP Checkpoint (End of Phase 3):** Human review of the entire end-to-end matching flow before adding Enhancements (Phase 4).
+2. **Weekly PR Audits:** Human maintainer reviews the `PROJECT_TRACKER.md` to prune stale tasks or adjust priority of the agent backlog.
+3. **Architecture Reviews:** Before adding any new major third-party dependencies not listed in `ARCHITECTURE.md`, an explicit architecture review issue must be opened by the AI agent.
