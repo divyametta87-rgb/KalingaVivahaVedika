@@ -1,18 +1,33 @@
-# Project Tracker / To-Do List
+# Project Tracker & Kanban Board
 
-This document acts as a high-level scratchpad for tracking active Agent execution blocks beyond the broader ROADMAP.md.
+This document represents the living state of the Kalinga Vivaha Vedika project. It should be updated synchronously as tasks move through the pipeline.
 
-## Current Active Focus
-* **Component**: Documentation & Infrastructure Setup
-* **Owner**: AI Agent
-* **Status**: In Progress
+## 🎯 Current Sprint Focus
+- **Goal:** Backend API Foundation & Database Modeling
+- **Timeline:** TBD
 
-## Backlog / Next Up
-1. Configure ESLint/Prettier to enforce frontend code standards.
-2. Initialize Spring Boot Data JPA & connect a local PostgreSQL database container.
-3. Configure GitHub Actions Workflow for PR validation.
+---
 
-## Completed
-- [x] Define Agentic Branching Strategy.
-- [x] Create Project Roadmap.
-- [x] Group documentation in `docs/` structure.
+## 📋 Backlog (To Do)
+* [ ] **Infra:** Set up GitHub Actions for automated Maven and NPM builds.
+* [ ] **Infra:** Configure pre-commit hooks (Husky, lint-staged).
+* [ ] **Backend:** Design PostgreSQL database schema (Users, Profiles, Preferences).
+* [ ] **Backend:** Implement JWT Authentication flow.
+* [ ] **Frontend:** Finalize generic UI component library (Buttons, Inputs, Modals).
+* [ ] **Frontend:** Implement responsive App Layout (Navbar, Sidebar, Footer).
+
+## 🚧 In Progress
+* [ ] (Empty)
+
+## 🧐 In Review (PRs)
+* [ ] (Empty)
+
+## ✅ Completed
+* [x] **Docs:** Defined Agentic Branching Strategy.
+* [x] **Docs:** Created Project Roadmap.
+* [x] **Docs:** Setup `docs/` folder, Quality Gates, Guidelines, and Checklists.
+
+---
+
+### Notes & Blockers
+* *No current blockers.*
