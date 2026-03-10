@@ -1,32 +1,31 @@
-# Frontend Requirements Document
+# Enterprise Frontend Requirements Document
 
-This document outlines the UI flow, components, and state requirements for the React + Vite frontend of Kalinga Vivaha Vedika.
+This document outlines the UI flow, components, and state requirements for the React + Vite frontend of Kalinga Vivaha Vedika, targeting a premium, production-ready user experience.
 
 ## 1. App Views (Pages)
 
-### Public Security Views
-- **Landing Page (`/`)**: High-impact hero section highlighting trust, community, and success stories. Call to action to Register or Login.
-- **Login (`/login`)**: Email/Password form.
-- **Registration (`/register`)**: Multi-step wizard to capture base authentication, then initial profile details to prevent drop-off.
+### Public Optimization
+- **Landing Page (`/`)**: Must achieve 90+ Lighthouse score. Highly optimized images (WebP format). SEO meta tags configured via React Helmet.
+- **Onboarding (`/register`)**: Phone Number -> OTP verification flow. Must include a progress bar and high-trust copywriting.
 
 ### Private Dashboards (Requires Auth Context)
-- **Home/Dashboard (`/dashboard`)**: The main feed. Displays "Today's Top Matches" tailored by the backend algorithm.
-- **My Profile (`/profile`)**: Extensive form to edit personal details, upload photos, and modify partner preferences. Must show a "Profile Completeness" progress bar.
-- **Search (`/search`)**: Advanced filtering view. Users can manually refine matches by age, sub-caste, education, and location.
-- **Matches/Interests (`/interests`)**: Shows profiles the user has "Liked" or received "Likes" from.
+- **Home/Dashboard**: Infinite scrolling feed. Uses progressive image loading (blurred placeholders transitioning to high-res, similar to Instagram).
+- **Search (`/search`)**: Advanced faceted filtering. As choices are made (e.g., selecting a Sub-Caste), the results counter should dynamically update using debounced API calls.
+- **Premium Upgrade (`/upgrade`)**: A high-conversion pricing page integrating the Razorpay Checkout UI overlay.
+- **Real-time Chat (`/messages`)**: Inbox view with read receipts, typing indicators, and immediate message rendering via WebSockets.
 
-## 2. Global State Management (React Context)
-* **AuthContext**: Manages the JWT token, current `userId`, and `role`. Handles auto-logout on token expiration.
-* **NotificationContext**: A global toast manager for success messages (e.g., "Profile Updated") and error handling (e.g., "Network Error").
+## 2. Global State & Data Fetching
+* **Server State Management:** **React Query (TanStack Query)** must be used instead of standard `useEffect` fetches. This provides automatic caching, background refetching, and pagination out of the box.
+* **Optimistic UI Updates:** When a user "Likes" a profile, the heart icon must instantly turn red on the frontend *before* the API responds, only reverting if the API call fails.
+* **Offline Resilience:** React Query should cache the user's last visited matches so the app doesn't show a blank screen on a subway or spotty cellular connection.
 
 ## 3. Core Component Library Requirements
-To maintain "WOW" aesthetics and consistency, agents must build these reusable foundational components before building complex views:
+To maintain "WOW" aesthetics, components must feel alive:
 
-* `<BaseButton />`: Variants for Primary (Deep Red/Gold), Secondary (Outline), and Ghost. Must include unified `disabled` and `loading` states (with micro-spinners).
-* `<Card />`: Glassmorphic or softly shadowed containers for Profile previews. Needs a clean hover animation (slight lift or border glow).
-* `<FormInput />`, `<FormSelect />`, `<FormDatepicker />`: Reusable controlled inputs with unified error label styling.
-* `<Modal />`: An animated overlay component for things like "Confirm Interest" or "Viewing Full Image".
+* `<BaseButton />`: Must include interactive ripple or scale-down effects on click (using Framer Motion or pure CSS transforms).
+* `<Card />`: Glassmorphic UI elements using CSS `backdrop-filter: blur()`.
+* `<ImageUploader />`: A drag-and-drop zone that compresses the image purely on the client-side (via a library like `browser-image-compression`) before uploading to S3, saving massive bandwidth costs.
 
 ## 4. UI/UX Rules
-- **No Empty States**: If `/interests` is empty, show a high-quality SVG illustration with text like "No connections yet. Keep exploring your matches!"
-- **Responsive Layout**: The `Navbar` must collapse into a Hamburger menu on mobile. The `Dashboard` grid should shift from 3 columns (Desktop) to 1 column (Mobile).
+- **Skeleton Loaders over Spinners:** Never use generic full-screen blocking spinners. Use animated skeleton placeholders for text and images while data fetches.
+- **Mobile First Touch Targets:** All interactable elements (buttons, inputs, sliders) must be at least 44x44 pixels to adhere to mobile accessibility standards.

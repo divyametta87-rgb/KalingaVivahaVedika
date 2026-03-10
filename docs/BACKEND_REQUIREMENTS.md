@@ -1,61 +1,53 @@
-# Backend Requirements Document
+# Enterprise Backend Requirements Document
 
-This document defines the core backend requirements for the Kalinga Vivaha Vedika application. It must be implemented using **Java 17+** and **Spring Boot 3**.
+This document defines the core backend requirements for the Kalinga Vivaha Vedika application, architected for scale (1,000 to 10,000+ users). It must be implemented using **Java 17+** and **Spring Boot 3**.
 
 ## 1. Database Schema Models (Entities)
 
-### `User` (Authentication)
+### `User` & Security
 * `id` (UUID, Primary Key)
-* `email` (String, Unique, Not Null)
-* `passwordHash` (String, Not Null)
-* `role` (Enum: USER, ADMIN)
-* `createdAt` (Timestamp)
+* `phone` (String, Unique, Not Null) - *Primary login mechanism via OTP*
+* `email` (String, Unique)
+* `role` (Enum: USER, PREMIUM_USER, ADMIN)
 * `status` (Enum: ACTIVE, PENDING_VERIFICATION, SUSPENDED)
+* `subscriptionEndDate` (Timestamp)
 
 ### `Profile` (Matchmaking Data)
 * `id` (UUID, Primary Key)
-* `userId` (UUID, Foreign Key to User, One-to-One)
-* `firstName` (String)
-* `lastName` (String)
-* `gender` (Enum: MALE, FEMALE)
-* `dateOfBirth` (Date)
-* `maritalStatus` (Enum: NEVER_MARRIED, DIVORCED, WIDOWED)
-* `heightCm` (Integer)
-* `education` (String)
-* `profession` (String)
-* `subCaste` (String - Specific to Kalinga community distinctions)
-* `city` (String)
-* `state` (String)
-* `country` (String)
+* `userId` (UUID, Foreign Key mapping)
+* `firstName`, `lastName`, `gender`, `dateOfBirth`
+* `heightCm`, `education`, `profession`, `incomeRange`
+* `subCaste`, `gotra`, `city`, `state`, `country`
 * `aboutMe` (Text)
-* `photoUrls` (Array of Strings / JSON column)
+* `photoUrls` (Array of Strings mapping to AWS S3/Cloudinary URLs)
+* `isVerified` (Boolean - Approved by Admin moderation)
 
-### `Preference` (Partner Let Look)
-* `id` (UUID, Primary Key)
-* `profileId` (UUID, Foreign Key)
-* `minAge` (Integer)
-* `maxAge` (Integer)
-* `minHeightCm` (Integer)
-* `educationReq` (List of Strings)
-* `maritalStatusReq` (List of Enums)
+### `Preference` (Partner Look)
+* `id`, `profileId`, `minAge`, `maxAge`, `minHeightCm`
+* `educationReq`, `maritalStatusReq`, `subCasteReq`
 
-## 2. Core REST APIs (v1)
+### `Subscription` (Monetization)
+* `id`, `userId`, `planType` (Enum: FREE, GOLD, PLATINUM)
+* `razorpayOrderId`, `razorpayPaymentId`, `status`
+* `amount`, `startDate`, `endDate`
 
-### Authentication (`/api/v1/auth`)
-* `POST /register`: Accepts email/password, creates `User`, returns JWT.
-* `POST /login`: Authenticates credentials, returns JWT.
-* `POST /refresh`: Refresh an expired JWT.
+## 2. Advanced Core APIs (v1)
 
-### Profiles (`/api/v1/profiles`)
-* `GET /me`: Returns the logged-in user's profile.
-* `POST /` : Create initial profile setup.
-* `PUT /{id}`: Update profile details.
-* `POST /{id}/photos`: Upload profile pictures.
+### Authentication & Security (`/api/v1/auth`)
+* `POST /send-otp`: Integrates with Twilio/Msg91.
+* `POST /verify-otp`: Validates OTP and returns JWT.
 
-### Matchmaking (`/api/v1/matches`)
-* `GET /recommendations`: Main matching algorithm endpoint. Returns a paginated list of `Profile` objects that score highly against the user's `Preference` criteria, prioritizing exact sub-caste or location matches based on complex business logic.
+### Profiles & Media (`/api/v1/profiles`)
+* `POST /{id}/photos/presigned-url`: Returns an AWS S3 pre-signed URL so the frontend can upload images directly to the cloud, saving server bandwidth.
 
-## 3. Security Requirements
-* All endpoints (except `/auth/*`) must be secured via **Spring Security** using Stateless JWT authentication.
-* Passwords must be hashed using BCrypt.
-* CORS must be strictly configured to allow only the production/staging Vite frontend URLs.
+### Enterprise Matchmaking & Search (`/api/v1/matches`)
+* `GET /feed`: Uses **Redis** caching to serve the daily feed of profiles instantly.
+* `POST /search`: Complex, multi-faceted filtering. *Future state: Migrate this query to **ElasticSearch** for fuzzy matching and weighted scoring.*
+
+### Communication & WebSockets (`/ws/chat`)
+* Implementing Spring Boot WebSockets with STOMP protocol.
+* Users can only message each other if both have "Mutual Likes" or if the sender is a `PREMIUM_USER`.
+
+### Monetization (`/api/v1/payments`)
+* `POST /create-order`: Generates a Razorpay Order ID.
+* `POST /webhook/razorpay`: Listens for successful payment events to upgrade user roles.
